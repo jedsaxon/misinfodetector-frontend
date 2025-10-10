@@ -1,7 +1,8 @@
+import Header from "@/components/ui/header"
 import { BrainCircuit } from "lucide-react"
 
 export default function ResearchPage() {
     return (<>
-       <h1 className="text-xl font-bold"><BrainCircuit /> Research</h1>
+       <Header><BrainCircuit color="#ed333b"/> Research</Header>
     </>)
 }

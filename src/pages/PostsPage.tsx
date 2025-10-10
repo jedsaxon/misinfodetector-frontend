@@ -1,7 +1,8 @@
-import { BrainCircuit, MessagesSquare } from "lucide-react"
+import Header from "@/components/ui/header"
+import { MessagesSquare } from "lucide-react"
 
 export default function PostsPage() {
     return (<>
-       <h1 className="text-xl font-bold"><MessagesSquare /> Posts</h1>
+       <Header><MessagesSquare color="#3584e4" /> Posts</Header>
     </>)
 }
