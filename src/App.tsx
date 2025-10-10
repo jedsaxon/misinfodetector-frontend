@@ -12,9 +12,8 @@ export function App() {
     <Router>
       <SidebarProvider className="flex">
         <AppSidebar />
-        <main className="flex flex-1">
-          <SidebarTrigger />
-          <div className="p-3 flex-1">
+        <main className="flex flex-1 flex-col p-3 g-3">
+          <div className="flex-1">
             <Routes>
               <Route path="/" element={<PostsPage />} />
               <Route path="/research" element={<ResearchPage />} />
