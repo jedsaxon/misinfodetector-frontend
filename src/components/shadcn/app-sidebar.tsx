@@ -1,4 +1,4 @@
-import { BrainCircuit, ChevronUp, Home, User2 } from "lucide-react";
+import { BrainCircuit, ChevronUp, Home, MessagesSquare, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -21,9 +21,9 @@ import {
 // Menu items.
 const items = [
   {
-    title: "Home",
+    title: "Posts",
     url: "#",
-    icon: Home,
+    icon: MessagesSquare,
   },
   {
     title: "Our Research",
