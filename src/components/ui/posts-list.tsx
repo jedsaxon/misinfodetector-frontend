@@ -1,5 +1,7 @@
 import type { Post } from "@/services/posts-service";
 import PostRecord from "./post-record"
+import { useState } from "react";
+import MisinformationDialogue from "./misinfo-dialogue";
 
 export default function PostList({
   posts,

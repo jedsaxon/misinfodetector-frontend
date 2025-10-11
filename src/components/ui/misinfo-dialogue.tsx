@@ -1,7 +1,7 @@
 import { ShieldAlert } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, AlertDialogTrigger } from "./alert-dialog";
 
-function MisinformationDialogue({
+export default function MisinformationDialogue({
   isOpen,
   setOpen,
   researchBtnClick,
