@@ -44,8 +44,7 @@ export async function responseToError(
   response: Response,
 ): Promise<DetailedApiError> {
   const responseJson = await response.json();
-  const errorJson = JSON.parse(responseJson);
-  const errorParsed = await detailedApiErrorSchema.safeParseAsync(errorJson);
+  const errorParsed = await detailedApiErrorSchema.safeParseAsync(responseJson);
 
   if (errorParsed.error) {
     return new DetailedApiError(defaultApiErrorTitle, response.statusText);

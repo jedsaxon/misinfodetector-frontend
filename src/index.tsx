@@ -11,9 +11,30 @@ const server = serve({
 
     "/api/posts": {
       async GET(req) {
-        return Response.json({
-          posts: posts,
+        const params = new URL(req.url);
+
+        const pageNumberParam = params.searchParams.get("pageNumber");
+        const resultAmountParam = params.searchParams.get("resultAmount");
+
+        if (!pageNumberParam || !resultAmountParam) {
+          const responseJson = JSON.stringify({
+            title: "malformed request",
+            description:
+              "you must provide both the pageNumber and resultAmount parameter",
+          });
+          return new Response(responseJson, { status: 400 });
+        }
+        const pageNumber = parseInt(pageNumberParam);
+        const resultAmount = parseInt(resultAmountParam);
+
+        const skip = pageNumber * resultAmount;
+        const to = skip + resultAmount;
+        const selectedPosts = posts.slice(skip, to);
+        const responseJson = JSON.stringify({
+          posts: selectedPosts,
         });
+
+        return new Response(responseJson);
       },
     },
 
@@ -23,6 +44,8 @@ const server = serve({
         message: `Hello, ${name}!`,
       });
     },
+
+    "/api/*": Response.json({ message: "Not found" }, { status: 404 }),
   },
 
   development: process.env.NODE_ENV !== "production" && {
