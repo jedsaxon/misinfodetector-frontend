@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ResearchPage from "./pages/ResearchPage";
 import PostsPage from "./pages/PostsPage";
 import NotFound from "./pages/NotFound";
+import AccountPage from "./pages/AccountPage";
 
 export function App() {
   return (
@@ -17,6 +18,7 @@ export function App() {
             <Routes>
               <Route path="/" element={<PostsPage />} />
               <Route path="/research" element={<ResearchPage />} />
+              <Route path="/account" element={<AccountPage />} />
               <Route path="/*" element={<NotFound />} />
             </Routes>
           </div>

@@ -23,7 +23,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Menu items.
 const items = [
@@ -40,6 +40,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const navigate = useNavigate() 
+
   return (
     <nav>
       <Sidebar>
@@ -76,11 +78,8 @@ export function AppSidebar() {
                   side="top"
                   className="w-[--radix-popper-anchor-width]"
                 >
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/account")}>
                     <span>Account</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Billing</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <span>Sign out</span>
