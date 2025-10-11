@@ -2,7 +2,7 @@ import { DetailedApiError } from "@/services/api-utils";
 import { fetchPosts, type Post } from "@/services/comment-service";
 import { useEffect, useState } from "react";
 
-export function useFetchPosts() {
+export function useFetchPosts(pageNumber: number) {
   const [posts, setPosts] = useState<Post[] | undefined>(undefined);
   const [apiError, setApiError] = useState<DetailedApiError | undefined>(undefined);
 
@@ -11,7 +11,7 @@ export function useFetchPosts() {
       setPosts(undefined);
       setApiError(undefined);
 
-      const response = await fetchPosts(0, 10);
+      const response = await fetchPosts(pageNumber, 10);
 
       if (response instanceof DetailedApiError) {
         setApiError(response);

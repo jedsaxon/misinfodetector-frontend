@@ -15,9 +15,11 @@ import VerticalSeparator from "@/components/ui/verticalseparator";
 import { useFetchPosts } from "@/hooks/use-posts";
 import { DetailedApiError } from "@/services/api-utils";
 import { AlertCircleIcon, HeartIcon, MessagesSquare } from "lucide-react";
+import { useState } from "react";
 
 export default function PostsPage() {
-  const { posts, apiError } = useFetchPosts();
+  const [pageNumber, setPageNumber] = useState(0);
+  const { posts, apiError } = useFetchPosts(pageNumber);
 
   const postComponents = posts ? (
     posts.map((p) => <Post post={p} key={p.id} />)
