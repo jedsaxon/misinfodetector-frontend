@@ -3,6 +3,7 @@ import {
   ChevronUp,
   Home,
   MessagesSquare,
+  Send,
   User2,
 } from "lucide-react";
 
@@ -31,6 +32,11 @@ const items = [
     title: "Posts",
     url: "/",
     icon: MessagesSquare,
+  },
+  {
+    title: "New Post",
+    url: "/new",
+    icon: Send,
   },
   {
     title: "Our Research",

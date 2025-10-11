@@ -7,6 +7,7 @@ import ResearchPage from "./pages/ResearchPage";
 import PostsPage from "./pages/PostsPage";
 import NotFound from "./pages/NotFound";
 import AccountPage from "./pages/AccountPage";
+import NewPostPage from "./pages/NewPostPage";
 
 export function App() {
   return (
@@ -17,6 +18,7 @@ export function App() {
           <div className="flex-1">
             <Routes>
               <Route path="/" element={<PostsPage />} />
+              <Route path="/new" element={<NewPostPage/>} />
               <Route path="/research" element={<ResearchPage />} />
               <Route path="/account" element={<AccountPage />} />
               <Route path="/*" element={<NotFound />} />
