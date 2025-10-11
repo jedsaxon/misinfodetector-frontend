@@ -8,6 +8,7 @@ import PostsPage from "./pages/PostsPage";
 import NotFound from "./pages/NotFound";
 import AccountPage from "./pages/AccountPage";
 import NewPostPage from "./pages/NewPostPage";
+import SinglePostPage from "./pages/SinglePostPage";
 
 export function App() {
   return (
@@ -18,6 +19,7 @@ export function App() {
           <div className="flex-1">
             <Routes>
               <Route path="/" element={<PostsPage />} />
+              <Route path="/posts/:id" element={<SinglePostPage />} />
               <Route path="/new" element={<NewPostPage/>} />
               <Route path="/research" element={<ResearchPage />} />
               <Route path="/account" element={<AccountPage />} />

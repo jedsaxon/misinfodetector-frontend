@@ -28,9 +28,14 @@ const postSchema = z.object({
   potentialMisinformation: z.boolean(),
 });
 
-const postApiResponseSchema = z.object({
+export const postApiResponseSchema = z.object({
   posts: z.array(postSchema),
   pages: z.number(),
+});
+
+export const singlePostApiResponseSchema = z.object({
+    message: z.string(),
+    post: postSchema
 });
 
 export async function uploadPost(
