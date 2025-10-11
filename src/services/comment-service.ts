@@ -3,6 +3,13 @@ import { DetailedApiError, safeFetch } from "./api-utils";
 import { randomUUID } from "crypto";
 import { faker } from "@faker-js/faker";
 
+export class PostResponse {
+  public constructor(
+    public readonly posts: Post[],
+    public readonly pageCount: number,
+  ) {}
+}
+
 export class Post {
   public constructor(
     public readonly id: string,
@@ -21,13 +28,16 @@ const postSchema = z.object({
 
 const postApiResponseSchema = z.object({
   posts: z.array(postSchema),
+  pages: z.number(),
 });
 
 export async function fetchPosts(
   pageNumber: number,
   resultAmount: number,
-): Promise<Post[] | DetailedApiError> {
-  const response = await safeFetch(`http://localhost:3000/api/posts?pageNumber=${pageNumber}&resultAmount=${resultAmount}`);
+): Promise<PostResponse | DetailedApiError> {
+  const response = await safeFetch(
+    `http://localhost:3000/api/posts?pageNumber=${pageNumber}&resultAmount=${resultAmount}`,
+  );
   if (response instanceof DetailedApiError) {
     return response as DetailedApiError;
   }
@@ -43,9 +53,10 @@ export async function fetchPosts(
       "Data was malformed - cannot display posts",
     );
   } else {
-    return parsedResponse.data.posts.map(
+    const posts = parsedResponse.data.posts.map(
       (p) => new Post(p.id, p.message, p.username, new Date(p.date)),
     );
+    return new PostResponse(posts, parsedResponse.data.pages);
   }
 }
 

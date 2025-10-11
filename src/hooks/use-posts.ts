@@ -1,9 +1,9 @@
 import { DetailedApiError } from "@/services/api-utils";
-import { fetchPosts, type Post } from "@/services/comment-service";
+import { fetchPosts, PostResponse } from "@/services/comment-service";
 import { useEffect, useState } from "react";
 
 export function useFetchPosts(pageNumber: number) {
-  const [posts, setPosts] = useState<Post[] | undefined>(undefined);
+  const [posts, setPosts] = useState<PostResponse | undefined>(undefined);
   const [apiError, setApiError] = useState<DetailedApiError | undefined>(undefined);
 
   useEffect(() => {

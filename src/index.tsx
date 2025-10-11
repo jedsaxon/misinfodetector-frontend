@@ -29,9 +29,13 @@ const server = serve({
 
         const skip = pageNumber * resultAmount;
         const to = skip + resultAmount;
+
+        const pages = Math.ceil(posts.length / resultAmount)
         const selectedPosts = posts.slice(skip, to);
+
         const responseJson = JSON.stringify({
           posts: selectedPosts,
+          pages: pages
         });
 
         return new Response(responseJson);
