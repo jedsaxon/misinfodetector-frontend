@@ -1,27 +1,23 @@
 import { serve } from "bun";
 import index from "./index.html";
+import { randomPosts } from "./services/comment-service";
+
+const posts = randomPosts(5000);
 
 const server = serve({
   routes: {
     // Serve index.html for all unmatched routes.
     "/*": index,
 
-    "/api/hello": {
+    "/api/posts": {
       async GET(req) {
         return Response.json({
-          message: "Hello, world!",
-          method: "GET",
-        });
-      },
-      async PUT(req) {
-        return Response.json({
-          message: "Hello, world!",
-          method: "PUT",
+          posts: posts,
         });
       },
     },
 
-    "/api/hello/:name": async req => {
+    "/api/hello/:name": async (req) => {
       const name = req.params.name;
       return Response.json({
         message: `Hello, ${name}!`,

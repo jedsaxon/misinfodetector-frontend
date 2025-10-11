@@ -1,7 +1,9 @@
 import { z } from "zod/v4";
 import { DetailedApiError, safeFetch } from "./api-utils";
+import { randomUUID } from "crypto";
+import { faker } from "@faker-js/faker";
 
-export class Comment {
+export class Post {
   public constructor(
     public readonly id: string,
     public readonly message: string,
@@ -10,23 +12,23 @@ export class Comment {
   ) {}
 }
 
-const commentSchema = z.object({
+const postSchema = z.object({
   id: z.string(),
   message: z.string(),
   username: z.string(),
   date: z.date(),
 });
 
-const commentApiResponseSchema = z.object({
-  comments: z.array(commentSchema),
+const postApiResponseSchema = z.object({
+  posts: z.array(postSchema),
 });
 
-export async function fetchComments(
+export async function fetchPosts(
   pageFrom: number,
   returnAmount: number,
-): Promise<Comment[] | DetailedApiError> {
+): Promise<Post[] | DetailedApiError> {
   const response = await safeFetch(
-    `http://localhost:3000/comments?from=${pageFrom}&amount=${returnAmount}`,
+    `http://localhost:3000/api/posts`,
   );
   if (response instanceof DetailedApiError) {
     return response as DetailedApiError;
@@ -34,14 +36,30 @@ export async function fetchComments(
 
   const responseJson = await response.json();
   const parsedResponse =
-    await commentApiResponseSchema.safeParseAsync(responseJson);
+    await postApiResponseSchema.safeParseAsync(responseJson);
 
   if (parsedResponse.error) {
     return new DetailedApiError(
       "Unknown error occurred",
-      "Data was malformed - cannot display comments",
+      "Data was malformed - cannot display posts",
     );
   } else {
-    return parsedResponse.data.comments;
+    return parsedResponse.data.posts;
   }
+}
+
+export function randomPost() {
+  const id = randomUUID().toString();
+  const message = faker.lorem.sentences({ min: 1, max: 3 });
+  const username = faker.person.fullName();
+  const date = faker.date.recent({ days: 30, refDate: new Date() });
+  return new Post(id, message, username, date);
+}
+
+export function randomPosts(count: number) {
+  const posts = new Array<Post>(count);
+  for (let i = 0; i < count; i++) {
+    posts[i] = randomPost();
+  }
+  return posts;
 }
