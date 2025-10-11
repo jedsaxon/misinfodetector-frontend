@@ -26,11 +26,18 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 export default function PostsPage() {
-  const [pageNumber, setPageNumber] = useState(0);
-  const { posts: postResponse, apiError } = useFetchPosts(pageNumber);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get("pageNumber") || "1");
+
+  const { posts: postResponse, apiError } = useFetchPosts(currentPage);
+
+  const handlePageChange = (newPage: number) => {
+    window.scrollTo({ top: 0, left: 0 });
+    setSearchParams({ pageNumber: newPage.toString() });
+  };
 
   const postComponents = postResponse ? (
     postResponse.posts.map((p) => <PostView post={p} key={p.id} />)
@@ -55,9 +62,11 @@ export default function PostsPage() {
       </div>
       <div className="mb-5">
         <PostPager
-          currentPage={pageNumber}
+          currentPage={currentPage}
           totalPages={postResponse?.pageCount ?? 0}
-          onPageChange={(e) => console.log(e)}
+          maxNextButtons={3}
+          maxPreviousButtons={1}
+          onPageChange={handlePageChange}
         />
       </div>
     </>
@@ -107,15 +116,19 @@ function PostView({ post }: { post: Post }) {
 function PostPager({
   currentPage,
   totalPages,
+  maxPreviousButtons = 3,
+  maxNextButtons = 3,
   onPageChange,
 }: {
   currentPage: number;
   totalPages: number;
+  maxPreviousButtons: number;
+  maxNextButtons: number;
   onPageChange: (newPage: number) => void;
 }) {
   const page = Math.max(1, Math.min(currentPage, totalPages));
-  const startPage = Math.max(1, page - 3);
-  const endPage = Math.min(totalPages, page + 3);
+  const startPage = Math.max(1, page - maxPreviousButtons);
+  const endPage = Math.min(totalPages, page + maxNextButtons);
 
   const pageNumbers = [];
   for (let i = startPage; i <= endPage; i++) {
@@ -131,7 +144,6 @@ function PostPager({
   return (
     <Pagination>
       <PaginationContent>
-        {/* Previous */}
         <PaginationItem>
           <PaginationPrevious
             aria-disabled={page <= 1}
@@ -139,7 +151,6 @@ function PostPager({
           />
         </PaginationItem>
 
-        {/* First page + ellipsis */}
         {startPage > 1 && (
           <>
             <PaginationItem>
@@ -158,7 +169,6 @@ function PostPager({
           </>
         )}
 
-        {/* Page numbers */}
         {pageNumbers.map((p) => (
           <PaginationItem key={p}>
             <PaginationLink
@@ -170,7 +180,6 @@ function PostPager({
           </PaginationItem>
         ))}
 
-        {/* Last page + ellipsis */}
         {endPage < totalPages && (
           <>
             {endPage < totalPages - 1 && (
@@ -189,7 +198,6 @@ function PostPager({
           </>
         )}
 
-        {/* Next */}
         <PaginationItem>
           <PaginationNext
             aria-disabled={page >= totalPages}

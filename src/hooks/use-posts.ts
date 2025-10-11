@@ -21,7 +21,7 @@ export function useFetchPosts(pageNumber: number) {
     };
 
     handlePostFetch();
-  }, []);
+  }, [pageNumber]);
 
   return { posts, apiError };
 }
