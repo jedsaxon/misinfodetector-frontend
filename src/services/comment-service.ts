@@ -24,10 +24,10 @@ const postApiResponseSchema = z.object({
 });
 
 export async function fetchPosts(
-  pageFrom: number,
-  returnAmount: number,
+  pageNumber: number,
+  resultAmount: number,
 ): Promise<Post[] | DetailedApiError> {
-  const response = await safeFetch(`http://localhost:3000/api/posts`);
+  const response = await safeFetch(`http://localhost:3000/api/posts?pageNumber=${pageNumber}&resultAmount=${resultAmount}`);
   if (response instanceof DetailedApiError) {
     return response as DetailedApiError;
   }
