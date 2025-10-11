@@ -15,7 +15,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import VerticalSeparator from "@/components/ui/verticalseparator";
 import { useFetchPosts } from "@/hooks/use-posts";
 import { DetailedApiError } from "@/services/api-utils";
-import { AlertCircleIcon, HeartIcon, MessagesSquare } from "lucide-react";
+import {
+  AlertCircleIcon,
+  HeartIcon,
+  MessagesSquare,
+  ShieldAlert,
+} from "lucide-react";
 import { useState } from "react";
 import {
   Pagination,
@@ -26,9 +31,21 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function PostsPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get("pageNumber") || "1");
 
@@ -39,10 +56,13 @@ export default function PostsPage() {
     setSearchParams({ pageNumber: newPage.toString() });
   };
 
-  const postComponents = postResponse ? (
-    postResponse.posts.map((p) => <PostView post={p} key={p.id} />)
+  const postContent = postResponse ? (
+    <PostList
+      posts={postResponse.posts}
+      researchBtnClick={() => navigate("/research")}
+    />
   ) : (
-    <PostSkeleton />
+    <PostSkeleton count={10} />
   );
 
   return (
@@ -58,7 +78,7 @@ export default function PostsPage() {
         style={{ maxWidth: "512px" }}
       >
         {apiError && <ApiError error={apiError} />}
-        {postComponents}
+        {postContent}
       </div>
       <div className="mb-5">
         <PostPager
@@ -73,6 +93,35 @@ export default function PostsPage() {
   );
 }
 
+export function PostList({
+  posts,
+  researchBtnClick,
+}: {
+  posts: Post[];
+  researchBtnClick: () => void;
+}) {
+  const [misinfoModalOpen, setMisinfoModalOpen] = useState<boolean>(false);
+
+  const postComponents = posts.map((p) => (
+    <PostRecord
+      post={p}
+      key={p.id}
+      misinfoClick={() => setMisinfoModalOpen(true)}
+    />
+  ));
+
+  return (
+    <>
+      {postComponents}
+      <MisinformationDialogue
+        isOpen={misinfoModalOpen}
+        setOpen={setMisinfoModalOpen}
+        researchBtnClick={researchBtnClick}
+      />
+    </>
+  );
+}
+
 function ApiError({ error }: { error: DetailedApiError }) {
   return (
     <Alert variant="destructive">
@@ -83,7 +132,7 @@ function ApiError({ error }: { error: DetailedApiError }) {
   );
 }
 
-function PostSkeleton() {
+function PostSkeleton({ count }: { count: number }) {
   return (
     <div className="flex flex-col gap-2">
       <Skeleton style={{ width: "512px", height: "calc(1.5rem * 1)" }} />
@@ -92,7 +141,13 @@ function PostSkeleton() {
   );
 }
 
-function PostView({ post }: { post: Post }) {
+function PostRecord({
+  post,
+  misinfoClick,
+}: {
+  post: Post;
+  misinfoClick: (p: Post) => void;
+}) {
   return (
     <Card>
       <CardHeader>
@@ -100,17 +155,65 @@ function PostView({ post }: { post: Post }) {
       </CardHeader>
       <CardContent>
         <p>{post.message}</p>
-        {post.potentialMisinformation == true && <p className="text-red-500">This post could contain misinformation</p>}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex flex-wrap">
         <ButtonGroup>
           <Button variant="outline">
             <HeartIcon />
           </Button>
-          <Button variant="outline">Details</Button>
+          <Button variant="outline">Comments</Button>
         </ButtonGroup>
+        {post.potentialMisinformation && (
+          <Button
+            variant="link"
+            className="text-red-500 underline"
+            onClick={() => misinfoClick(post)}
+          >
+            <ShieldAlert /> This post could contain misinformation
+          </Button>
+        )}
       </CardFooter>
     </Card>
+  );
+}
+
+function MisinformationDialogue({
+  isOpen,
+  setOpen,
+  researchBtnClick,
+}: {
+  isOpen: boolean;
+  setOpen: (state: boolean) => void;
+  researchBtnClick: () => void;
+}) {
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={setOpen}>
+      <AlertDialogTrigger />
+
+      <AlertDialogContent>
+        <AlertDialogTitle className="flex gap-x-2 items-center">
+          <ShieldAlert /> <span>This Post May Contains Misinformation</span>
+        </AlertDialogTitle>
+        <AlertDialogDescription>
+          Our systems detected that this post could contain misinformation. If
+          this topic is important to you, please do further research and confirm
+          that the claims made in this post are valid.
+        </AlertDialogDescription>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={researchBtnClick}>
+            How It Works
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={handleClose}>
+            Understood
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
