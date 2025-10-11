@@ -40,7 +40,18 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const navigate = useNavigate() 
+  const navigate = useNavigate();
+
+  const sidebarItems = items.map((item, idx) => (
+    <SidebarMenuItem key={idx}>
+      <SidebarMenuButton asChild onClick={() => navigate(item.url)}>
+        <span>
+          <item.icon />
+          <span>{item.title}</span>
+        </span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  ));
 
   return (
     <nav>
@@ -49,18 +60,7 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupLabel>Application</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link to={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              <SidebarMenu>{sidebarItems}</SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
