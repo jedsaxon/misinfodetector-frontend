@@ -1,5 +1,5 @@
 import { DetailedApiError } from "@/services/api-utils";
-import { fetchPosts, PostResponse } from "@/services/comment-service";
+import { fetchPosts, PostResponse } from "@/services/posts-service";
 import { useEffect, useState } from "react";
 
 export function useFetchPosts(pageNumber: number) {

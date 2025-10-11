@@ -1,6 +1,6 @@
 import { serve } from "bun";
 import index from "./index.html";
-import { randomPosts } from "./services/comment-service";
+import { randomPosts } from "./services/posts-service";
 
 const posts = randomPosts(5000);
 
