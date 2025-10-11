@@ -54,7 +54,11 @@ export default function PostsPage() {
         {postComponents}
       </div>
       <div className="mb-5">
-        <PostPager currentPage={pageNumber} totalPages={postResponse?.pageCount ?? 0} />
+        <PostPager
+          currentPage={pageNumber}
+          totalPages={postResponse?.pageCount ?? 0}
+          onPageChange={(e) => console.log(e)}
+        />
       </div>
     </>
   );
@@ -103,41 +107,47 @@ function PostView({ post }: { post: Post }) {
 function PostPager({
   currentPage,
   totalPages,
+  onPageChange,
 }: {
   currentPage: number;
   totalPages: number;
+  onPageChange: (newPage: number) => void;
 }) {
-  // Clamp page within valid range
   const page = Math.max(1, Math.min(currentPage, totalPages));
-
-  const pageNumbers = [];
   const startPage = Math.max(1, page - 3);
   const endPage = Math.min(totalPages, page + 3);
 
+  const pageNumbers = [];
   for (let i = startPage; i <= endPage; i++) {
     pageNumbers.push(i);
   }
 
-  const goToPage = (pageNum: number) => `/?pageNumber=${pageNum}`;
+  const handlePageChange = (newPage: number) => {
+    if (newPage !== page && newPage >= 1 && newPage <= totalPages) {
+      onPageChange(newPage);
+    }
+  };
 
   return (
     <Pagination>
       <PaginationContent>
+        {/* Previous */}
         <PaginationItem>
-          {page > 1 ? (
-            <PaginationPrevious>
-              <Link to={goToPage(page - 1)} />
-            </PaginationPrevious>
-          ) : (
-            <PaginationPrevious aria-disabled />
-          )}
+          <PaginationPrevious
+            aria-disabled={page <= 1}
+            onClick={() => handlePageChange(page - 1)}
+          />
         </PaginationItem>
 
+        {/* First page + ellipsis */}
         {startPage > 1 && (
           <>
             <PaginationItem>
-              <PaginationLink isActive={page === 1}>
-                <Link to={goToPage(1)}>1</Link>
+              <PaginationLink
+                isActive={page === 1}
+                onClick={() => handlePageChange(1)}
+              >
+                1
               </PaginationLink>
             </PaginationItem>
             {startPage > 2 && (
@@ -148,14 +158,19 @@ function PostPager({
           </>
         )}
 
+        {/* Page numbers */}
         {pageNumbers.map((p) => (
           <PaginationItem key={p}>
-            <PaginationLink isActive={p === page}>
-              <Link to={goToPage(p)}>{p}</Link>
+            <PaginationLink
+              isActive={p === page}
+              onClick={() => handlePageChange(p)}
+            >
+              {p}
             </PaginationLink>
           </PaginationItem>
         ))}
 
+        {/* Last page + ellipsis */}
         {endPage < totalPages && (
           <>
             {endPage < totalPages - 1 && (
@@ -164,8 +179,11 @@ function PostPager({
               </PaginationItem>
             )}
             <PaginationItem>
-              <PaginationLink isActive={page === totalPages}>
-                <Link to={goToPage(totalPages)}>{totalPages}</Link>
+              <PaginationLink
+                isActive={page === totalPages}
+                onClick={() => handlePageChange(totalPages)}
+              >
+                {totalPages}
               </PaginationLink>
             </PaginationItem>
           </>
@@ -173,13 +191,10 @@ function PostPager({
 
         {/* Next */}
         <PaginationItem>
-          {page < totalPages ? (
-            <PaginationNext>
-              <Link to={goToPage(page + 1)} />
-            </PaginationNext>
-          ) : (
-            <PaginationNext aria-disabled />
-          )}
+          <PaginationNext
+            aria-disabled={page >= totalPages}
+            onClick={() => handlePageChange(page + 1)}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
