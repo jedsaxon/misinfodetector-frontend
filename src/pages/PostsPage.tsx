@@ -4,7 +4,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import VerticalSeparator from "@/components/ui/verticalseparator";
 import { DetailedApiError } from "@/services/api-utils";
 import { fetchPosts, Post } from "@/services/comment-service";
-import { MessagesSquare, Terminal } from "lucide-react";
+import { AlertCircleIcon, MessagesSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function PostsPage() {
@@ -33,22 +33,24 @@ export default function PostsPage() {
   }, []);
 
   return (
-    <div>
+    <>
       <Header className="mb-3">
         <SidebarTrigger />
         <VerticalSeparator />
         <MessagesSquare className="mx-1" color="#3584e4" />
         Posts
       </Header>
-      {apiError && <ApiError error={apiError} />}
-    </div>
+      <div className="flex flex-col gap-2 m-auto" style={{ maxWidth: "512px" }}>
+        {apiError && <ApiError error={apiError} />}
+      </div>
+    </>
   );
 }
 
 function ApiError({ error }: { error: DetailedApiError }) {
   return (
     <Alert variant="destructive">
-      <Terminal />
+      <AlertCircleIcon />
       <AlertTitle>{error.title}</AlertTitle>
       {error && <AlertDescription>{error.description}</AlertDescription>}
     </Alert>

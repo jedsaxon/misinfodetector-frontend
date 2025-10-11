@@ -16,7 +16,7 @@ const postSchema = z.object({
   id: z.string(),
   message: z.string(),
   username: z.string(),
-  date: z.date(),
+  date: z.string(),
 });
 
 const postApiResponseSchema = z.object({
@@ -27,9 +27,7 @@ export async function fetchPosts(
   pageFrom: number,
   returnAmount: number,
 ): Promise<Post[] | DetailedApiError> {
-  const response = await safeFetch(
-    `http://localhost:3000/api/posts`,
-  );
+  const response = await safeFetch(`http://localhost:3000/api/posts`);
   if (response instanceof DetailedApiError) {
     return response as DetailedApiError;
   }
@@ -39,12 +37,15 @@ export async function fetchPosts(
     await postApiResponseSchema.safeParseAsync(responseJson);
 
   if (parsedResponse.error) {
+    console.error("zod error: ", parsedResponse.error);
     return new DetailedApiError(
       "Unknown error occurred",
       "Data was malformed - cannot display posts",
     );
   } else {
-    return parsedResponse.data.posts;
+    return parsedResponse.data.posts.map(
+      (p) => new Post(p.id, p.message, p.username, new Date(p.date)),
+    );
   }
 }
 
