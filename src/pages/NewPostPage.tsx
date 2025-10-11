@@ -47,7 +47,7 @@ const pageFormSchema = z.object({
     .max(256, "Message cannot have more than 256 characters."),
   username: z
     .string()
-    .min(1, "Username cannot be empty")
+    .min(1, "Username cannot be empty.")
     .max(64, "Username cannot have more than 64 characters."),
   dna: z.boolean().refine((val) => val === true, {
     message: "You must give up your privacy to use this site.",

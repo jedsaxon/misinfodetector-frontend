@@ -42,7 +42,7 @@ const server = serve({
 
         const responseJson = JSON.stringify({
           posts: selectedPosts,
-          pages: pages,
+          pages: pages - 1,
         });
 
         return new Response(responseJson);
