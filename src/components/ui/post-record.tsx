@@ -7,16 +7,22 @@ import { Dot, HeartIcon, ShieldAlert } from "lucide-react";
 export default function PostRecord({
   post,
   misinfoClick,
+  detailsClick,
 }: {
   post: Post;
   misinfoClick: (p: Post) => void;
+  detailsClick: (p: Post) => void;
 }) {
-  const dateString = post.date.toLocaleString()
+  const dateString = post.date.toLocaleString();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center">{post.username}<Dot className="text-gray-600"/><span className="text-gray-500 font-normal">{dateString}</span></CardTitle>
+        <CardTitle className="flex items-center">
+          {post.username}
+          <Dot className="text-gray-600" />
+          <span className="text-gray-500 font-normal">{dateString}</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <p>{post.message}</p>
@@ -26,7 +32,9 @@ export default function PostRecord({
           <Button variant="outline">
             <HeartIcon />
           </Button>
-          <Button variant="outline">Comments</Button>
+          <Button variant="outline" onClick={() => detailsClick(post)}>
+            Details
+          </Button>
         </ButtonGroup>
         {post.potentialMisinformation && (
           <Button
@@ -41,4 +49,3 @@ export default function PostRecord({
     </Card>
   );
 }
-

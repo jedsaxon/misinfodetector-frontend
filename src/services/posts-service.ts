@@ -104,7 +104,7 @@ export function randomPost() {
   const id = randomUUID().toString();
   const message = faker.lorem.sentences({ min: 1, max: 3 });
   const username = faker.person.fullName();
-  const date = faker.date.recent({ days: 30, refDate: new Date() });
+  const date = faker.date.recent({ days: 30, refDate: new Date(new Date().toUTCString()) });
   const misinformation = Boolean(faker.number.int({ min: 0, max: 1 }));
   return new Post(id, message, username, date, misinformation);
 }

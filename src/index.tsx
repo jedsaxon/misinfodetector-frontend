@@ -38,7 +38,9 @@ const server = serve({
         const to = skip + resultAmount;
 
         const pages = Math.ceil(postsDatabase.length / resultAmount);
-        const selectedPosts = postsDatabase.slice(skip, to);
+        const selectedPosts = postsDatabase
+          .toSorted((a, b) => b.date.getTime() - a.date.getTime())
+          .slice(skip, to);
 
         const responseJson = JSON.stringify({
           posts: selectedPosts,
@@ -74,7 +76,30 @@ const server = serve({
         );
         postsDatabase.push(p);
 
-        return new Response(JSON.stringify(p), { status: 201, headers: { Location: "http://localhost:3000/api/posts" } });
+        return new Response(JSON.stringify(p), {
+          status: 201,
+          headers: { Location: "http://localhost:3000/api/posts" },
+        });
+      },
+    },
+
+    "/api/posts/:id": {
+      async GET(req) {
+        const id = req.params.id;
+        const postIdx = postsDatabase.findIndex((p) => p.id == id);
+        if (postIdx == -1) {
+          const responseJson = JSON.stringify({
+            message: "not found",
+            description: `post with id ${id} could not be found`,
+          });
+          return new Response(responseJson, { status: 404 });
+        }
+
+        const responseJson = JSON.stringify({
+            message: "found post",
+            post: postsDatabase[postIdx]
+        });
+        return new Response(responseJson);
       },
     },
 
