@@ -15,6 +15,7 @@ export class Post {
     public readonly id: string,
     public readonly message: string,
     public readonly username: string,
+    public readonly potentialMisinformation: boolean = false,
     public readonly date: Date,
   ) {}
 }
@@ -24,6 +25,7 @@ const postSchema = z.object({
   message: z.string(),
   username: z.string(),
   date: z.string(),
+  potentialMisinformation: z.boolean().default(false)
 });
 
 const postApiResponseSchema = z.object({
@@ -54,7 +56,7 @@ export async function fetchPosts(
     );
   } else {
     const posts = parsedResponse.data.posts.map(
-      (p) => new Post(p.id, p.message, p.username, new Date(p.date)),
+      (p) => new Post(p.id, p.message, p.username, p.potentialMisinformation, new Date(p.date)),
     );
     return new PostResponse(posts, parsedResponse.data.pages);
   }
@@ -65,7 +67,8 @@ export function randomPost() {
   const message = faker.lorem.sentences({ min: 1, max: 3 });
   const username = faker.person.fullName();
   const date = faker.date.recent({ days: 30, refDate: new Date() });
-  return new Post(id, message, username, date);
+  const misinformation = Boolean(faker.number.int({ min: 0,  max: 1 }))
+  return new Post(id, message, username, misinformation, date);
 }
 
 export function randomPosts(count: number) {

@@ -100,6 +100,7 @@ function PostView({ post }: { post: Post }) {
       </CardHeader>
       <CardContent>
         <p>{post.message}</p>
+        {post.potentialMisinformation == true && <p className="text-red-500">This post could contain misinformation</p>}
       </CardContent>
       <CardFooter>
         <ButtonGroup>
