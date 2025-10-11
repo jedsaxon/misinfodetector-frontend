@@ -20,10 +20,11 @@ const detailedApiErrorSchema = z.object({
  */
 export async function safeFetch(
   endpoint: string,
+  options?: RequestInit
 ): Promise<Response | DetailedApiError> {
   let response: Response;
   try {
-    response = await fetch(endpoint);
+    response = await fetch(endpoint, options);
   } catch (e) {
     return fetchErrorToDetailedError(e);
   }

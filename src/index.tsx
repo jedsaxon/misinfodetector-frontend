@@ -1,8 +1,14 @@
 import { serve } from "bun";
 import index from "./index.html";
-import { randomPosts } from "./services/posts-service";
+import { Post, randomPosts } from "./services/posts-service";
+import { z } from "zod/v4";
 
-const posts = randomPosts(5000);
+const postsDatabase = randomPosts(50);
+
+const newPostSchema = z.object({
+  message: z.string(),
+  username: z.string(),
+});
 
 const server = serve({
   routes: {
@@ -30,15 +36,44 @@ const server = serve({
         const skip = pageNumber * resultAmount;
         const to = skip + resultAmount;
 
-        const pages = Math.ceil(posts.length / resultAmount)
-        const selectedPosts = posts.slice(skip, to);
+        const pages = Math.ceil(postsDatabase.length / resultAmount);
+        const selectedPosts = postsDatabase.slice(skip, to);
 
         const responseJson = JSON.stringify({
           posts: selectedPosts,
-          pages: pages
+          pages: pages,
         });
 
         return new Response(responseJson);
+      },
+
+      async PUT(req) {
+        let reqJson: unknown;
+        try {
+          reqJson = await req.json();
+        } catch (e) {
+          console.log("malformed request: ", e);
+          return new Response(`malformed request: ${e}`, { status: 400 });
+        }
+        const postResponse = await newPostSchema.safeParseAsync(reqJson);
+        if (postResponse.error) {
+          const msg = postResponse.error.message;
+          console.log("malformed request: ", msg);
+          return new Response(`malformed request: ${msg}`, { status: 400 });
+        }
+
+        const submissionDate = new Date();
+        const id = randomUUID();
+        const p = new Post(
+          id,
+          postResponse.data.message,
+          postResponse.data.username,
+          submissionDate,
+          false,
+        );
+        postsDatabase.push(p);
+                
+        return new Response(JSON.stringify(p), { status: 201, headers: { Location: "http://localhost:3000/api/posts" } });
       },
     },
 
@@ -62,3 +97,6 @@ const server = serve({
 });
 
 console.log(`🚀 Server running at ${server.url}`);
+function randomUUID(): any {
+  throw new Error("Function not implemented.");
+}

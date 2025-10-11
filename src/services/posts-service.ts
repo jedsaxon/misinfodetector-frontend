@@ -15,8 +15,8 @@ export class Post {
     public readonly id: string,
     public readonly message: string,
     public readonly username: string,
-    public readonly potentialMisinformation: boolean = false,
     public readonly date: Date,
+    public readonly potentialMisinformation?: boolean,
   ) {}
 }
 
@@ -25,13 +25,44 @@ const postSchema = z.object({
   message: z.string(),
   username: z.string(),
   date: z.string(),
-  potentialMisinformation: z.boolean().default(false)
+  potentialMisinformation: z.boolean(),
 });
 
 const postApiResponseSchema = z.object({
   posts: z.array(postSchema),
   pages: z.number(),
 });
+
+export async function uploadPost(
+  message: string,
+  username: string,
+): Promise<DetailedApiError | Post> {
+  const response = await safeFetch("http://localhost:3000/api/posts", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, username }),
+  });
+
+  if (response instanceof DetailedApiError) return response;
+
+  const responseJson = await response.json();
+  const parsedResponse = await postSchema.safeParseAsync(responseJson);
+
+  if (parsedResponse.error) {
+    return new DetailedApiError(
+      "Post was uploaded, but could not provide details",
+      "There was an issue with the response payload, after recieving confirmation that it uploaded.",
+    );
+  } else {
+    return new Post(
+      parsedResponse.data.id,
+      parsedResponse.data.message,
+      parsedResponse.data.username,
+      new Date(parsedResponse.data.date),
+      parsedResponse.data.potentialMisinformation,
+    );
+  }
+}
 
 export async function fetchPosts(
   pageNumber: number,
@@ -56,7 +87,14 @@ export async function fetchPosts(
     );
   } else {
     const posts = parsedResponse.data.posts.map(
-      (p) => new Post(p.id, p.message, p.username, p.potentialMisinformation, new Date(p.date)),
+      (p) =>
+        new Post(
+          p.id,
+          p.message,
+          p.username,
+          new Date(p.date),
+          p.potentialMisinformation,
+        ),
     );
     return new PostResponse(posts, parsedResponse.data.pages);
   }
@@ -67,8 +105,8 @@ export function randomPost() {
   const message = faker.lorem.sentences({ min: 1, max: 3 });
   const username = faker.person.fullName();
   const date = faker.date.recent({ days: 30, refDate: new Date() });
-  const misinformation = Boolean(faker.number.int({ min: 0,  max: 1 }))
-  return new Post(id, message, username, misinformation, date);
+  const misinformation = Boolean(faker.number.int({ min: 0, max: 1 }));
+  return new Post(id, message, username, date, misinformation);
 }
 
 export function randomPosts(count: number) {
