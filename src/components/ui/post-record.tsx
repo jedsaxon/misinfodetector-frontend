@@ -2,7 +2,7 @@ import type { Post } from "@/services/posts-service";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./card";
 import { ButtonGroup } from "./button-group";
 import { Button } from "./button";
-import { HeartIcon, ShieldAlert } from "lucide-react";
+import { Dot, HeartIcon, ShieldAlert } from "lucide-react";
 
 export default function PostRecord({
   post,
@@ -11,10 +11,12 @@ export default function PostRecord({
   post: Post;
   misinfoClick: (p: Post) => void;
 }) {
+  const dateString = post.date.toLocaleString()
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{post.username}</CardTitle>
+        <CardTitle className="flex items-center">{post.username}<Dot className="text-gray-600"/><span className="text-gray-500 font-normal">{dateString}</span></CardTitle>
       </CardHeader>
       <CardContent>
         <p>{post.message}</p>
