@@ -12,33 +12,12 @@ import Header from "@/components/ui/header";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import VerticalSeparator from "@/components/ui/verticalseparator";
+import { useFetchPosts } from "@/hooks/use-posts";
 import { DetailedApiError } from "@/services/api-utils";
-import { fetchPosts, Post } from "@/services/comment-service";
 import { AlertCircleIcon, HeartIcon, MessagesSquare } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function PostsPage() {
-  const [posts, setPosts] = useState<Post[] | undefined>(undefined);
-  const [apiError, setApiError] = useState<DetailedApiError | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    const handlePostFetch = async () => {
-      setPosts(undefined);
-      setApiError(undefined);
-
-      const response = await fetchPosts(0, 10);
-
-      if (response instanceof DetailedApiError) {
-        setApiError(response);
-      } else {
-        setPosts(response);
-      }
-    };
-
-    handlePostFetch();
-  }, []);
+  const { posts, apiError } = useFetchPosts();
 
   const postComponents = posts ? (
     posts.map((p) => <Post post={p} key={p.id} />)
@@ -92,7 +71,9 @@ function Post({ post }: { post: Post }) {
       </CardContent>
       <CardFooter>
         <ButtonGroup>
-          <Button variant="outline"><HeartIcon /></Button>
+          <Button variant="outline">
+            <HeartIcon />
+          </Button>
           <Button variant="outline">Details</Button>
         </ButtonGroup>
       </CardFooter>
