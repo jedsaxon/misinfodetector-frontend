@@ -7,6 +7,13 @@ export class DetailedApiError {
   ) {}
 }
 
+export class ApiResponse<T> {
+  public constructor(
+    public readonly data: T,
+    public readonly message?: string,
+  ) {}
+}
+
 const defaultApiErrorTitle = "Unable to fetch comments";
 
 const detailedApiErrorSchema = z.object({
@@ -20,7 +27,7 @@ const detailedApiErrorSchema = z.object({
  */
 export async function safeFetch(
   endpoint: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<Response | DetailedApiError> {
   let response: Response;
   try {

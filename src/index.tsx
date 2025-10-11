@@ -2,6 +2,7 @@ import { serve } from "bun";
 import index from "./index.html";
 import { Post, randomPosts } from "./services/posts-service";
 import { z } from "zod/v4";
+import { randomUUID } from "crypto";
 
 const postsDatabase = randomPosts(50);
 
@@ -63,7 +64,7 @@ const server = serve({
         }
 
         const submissionDate = new Date();
-        const id = randomUUID();
+        const id = randomUUID().toString();
         const p = new Post(
           id,
           postResponse.data.message,
@@ -72,7 +73,7 @@ const server = serve({
           false,
         );
         postsDatabase.push(p);
-                
+
         return new Response(JSON.stringify(p), { status: 201, headers: { Location: "http://localhost:3000/api/posts" } });
       },
     },
@@ -97,6 +98,3 @@ const server = serve({
 });
 
 console.log(`🚀 Server running at ${server.url}`);
-function randomUUID(): any {
-  throw new Error("Function not implemented.");
-}

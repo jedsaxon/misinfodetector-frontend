@@ -1,7 +1,7 @@
 import Header from "@/components/ui/header";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import VerticalSeparator from "@/components/ui/verticalseparator";
-import { BrainCircuit, Send } from "lucide-react";
+import { BrainCircuit, Send, ShieldAlert } from "lucide-react";
 import z from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -26,12 +26,25 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { DetailedApiError, ApiResponse } from "@/services/api-utils";
+import { uploadPost, type Post } from "@/services/posts-service";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const pageFormSchema = z.object({
-  post: z
+  message: z
     .string()
-    .min(1, "Post cannot be empty.")
-    .max(256, "Post cannot have more than 256 characters."),
+    .min(1, "Message cannot be empty.")
+    .max(256, "Message cannot have more than 256 characters."),
   username: z
     .string()
     .min(1, "Username cannot be empty")
@@ -43,13 +56,21 @@ const pageFormSchema = z.object({
 
 export default function NewPostPage() {
   const navigate = useNavigate();
+  const [apiError, setApiError] = useState<DetailedApiError | undefined>(
+    undefined,
+  );
 
   const handleFormCancel = () => {
     navigate("/");
   };
 
-  const handleFormSubmit = (data: z.infer<typeof pageFormSchema>) => {
-    console.log("submitted", data);
+  const handleFormSubmit = async (data: z.infer<typeof pageFormSchema>) => {
+    const response = await uploadPost(data.message, data.username);
+    if (response instanceof DetailedApiError) {
+      setApiError(response);
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -65,6 +86,16 @@ export default function NewPostPage() {
           onFormCancel={handleFormCancel}
         />
       </div>
+      <ApiErrorDialogue
+        title={apiError?.title ?? ""}
+        message={apiError?.description ?? ""}
+        isOpen={apiError != undefined}
+        setOpen={(o) => {
+          if (o == true) return; // this modal can only be opened with an error
+          setApiError(undefined);
+        }}
+        closeBtnClick={() => setApiError(undefined)}
+      />
     </>
   );
 }
@@ -80,7 +111,7 @@ export function NewPostForm({
     resolver: zodResolver(pageFormSchema),
     mode: "onSubmit",
     defaultValues: {
-      post: "",
+      message: "",
       username: "",
       dna: false as true | false,
     },
@@ -99,11 +130,11 @@ export function NewPostForm({
           <FieldGroup>
             {/* ----- POST INPUT FIELD ----- */}
             <Controller
-              name="post"
+              name="message"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="new-post-form-post">Post</FieldLabel>
+                  <FieldLabel htmlFor="new-post-form-post">Message</FieldLabel>
                   <Textarea
                     {...field}
                     id="new-post-form-post"
@@ -182,5 +213,45 @@ export function NewPostForm({
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+export function ApiErrorDialogue({
+  isOpen,
+  setOpen,
+  title,
+  message,
+  closeBtnClick,
+}: {
+  isOpen: boolean;
+  title: string;
+  message?: string;
+  setOpen: (state: boolean) => void;
+  closeBtnClick: () => void;
+}) {
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={setOpen}>
+      <AlertDialogTrigger />
+
+      <AlertDialogContent>
+        <AlertDialogTitle className="flex gap-x-2 items-center">
+          <ShieldAlert /> <span>{title}</span>
+        </AlertDialogTitle>
+        {message && <AlertDialogDescription>{message}</AlertDialogDescription>}
+
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={closeBtnClick}>
+            How It Works
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={handleClose}>
+            Understood
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
