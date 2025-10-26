@@ -48,7 +48,7 @@ export async function uploadPost(
     username: string,
 ): Promise<DetailedApiError | Post> {
     const response = await safeFetch("http://localhost:5000/api/posts", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message, username }),
     });

@@ -62,7 +62,7 @@ export default function PostsPage() {
         {apiError && <ApiErrorAlert error={apiError} />}
         {postContent}
       </div>
-      {postNav && { postNav }}
+      {postNav && postNav}
     </>
   );
 }
