@@ -51,7 +51,12 @@ export function fetchErrorToDetailedError(e: unknown) {
 export async function responseToError(
   response: Response,
 ): Promise<DetailedApiError> {
-  const responseJson = await response.json();
+  let responseJson: unknown;
+  try {
+    responseJson = await response.json();
+  } catch {
+    responseJson = {};
+  }
   const errorParsed = await detailedApiErrorSchema.safeParseAsync(responseJson);
 
   if (errorParsed.error) {
