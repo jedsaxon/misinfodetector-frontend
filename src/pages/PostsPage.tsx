@@ -23,8 +23,19 @@ export default function PostsPage() {
   };
 
   const postClicked = (post: Post) => {
-    navigate(`/posts/${post.id}`)
+    navigate(`/posts/${post.id}`);
   };
+
+  const postNav =
+    postResponse && postResponse.posts.length > 0 ? (
+      <PostPager
+        currentPage={currentPage}
+        totalPages={postResponse?.pageCount ?? 0}
+        maxNextButtons={3}
+        maxPreviousButtons={1}
+        onPageChange={handlePageChange}
+      />
+    ) : undefined;
 
   const postContent = postResponse ? (
     <PostList
@@ -51,15 +62,7 @@ export default function PostsPage() {
         {apiError && <ApiErrorAlert error={apiError} />}
         {postContent}
       </div>
-      <div className="mb-5">
-        <PostPager
-          currentPage={currentPage}
-          totalPages={postResponse?.pageCount ?? 0}
-          maxNextButtons={3}
-          maxPreviousButtons={1}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      {postNav && { postNav }}
     </>
   );
 }

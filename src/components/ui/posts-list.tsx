@@ -1,7 +1,8 @@
 import type { Post } from "@/services/posts-service";
 import PostRecord from "./post-record";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import MisinformationDialogue from "./misinfo-dialogue";
+import EmptyPostList from "./empty-post-list";
 
 export default function PostList({
   posts,
@@ -14,18 +15,23 @@ export default function PostList({
 }) {
   const [misinfoModalOpen, setMisinfoModalOpen] = useState<boolean>(false);
 
-  const postComponents = posts.map((p) => (
-    <PostRecord
-      post={p}
-      key={p.id}
-      misinfoClick={() => setMisinfoModalOpen(true)}
-      detailsClick={detailsBtnClick}
-    />
-  ));
+  const components =
+    posts.length > 0 ? (
+      posts.map((p) => (
+        <PostRecord
+          post={p}
+          key={p.id}
+          misinfoClick={() => setMisinfoModalOpen(true)}
+          detailsClick={detailsBtnClick}
+        />
+      ))
+    ) : (
+      <EmptyPostList />
+    );
 
   return (
     <>
-      {postComponents}
+      {components}
       <MisinformationDialogue
         isOpen={misinfoModalOpen}
         setOpen={setMisinfoModalOpen}
