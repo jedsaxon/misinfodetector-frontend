@@ -80,7 +80,7 @@ export async function fetchPosts(
     resultAmount: number,
 ): Promise<PostResponse | DetailedApiError> {
     const response = await safeFetch(
-        `http://localhost:5000/api/posts?pageNumber=${pageNumber - 1}&resultAmount=${resultAmount}`,
+        `http://localhost:5000/api/posts?pageNumber=${pageNumber}&resultAmount=${resultAmount}`,
     );
     if (response instanceof DetailedApiError) {
         return response as DetailedApiError;
