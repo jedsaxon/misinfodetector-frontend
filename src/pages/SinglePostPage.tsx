@@ -1,15 +1,11 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Header from "@/components/ui/header";
-import PostRecord from "@/components/ui/post-record";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
 import VerticalSeparator from "@/components/ui/verticalseparator";
 import { DetailedApiError, safeFetch } from "@/services/api-utils";
 import { Post, singlePostApiResponseSchema } from "@/services/posts-service";
-import { AlertCircleIcon, Dot, HeartIcon, MessageSquare, MessagesSquare, ShieldAlert, ShieldBan } from "lucide-react";
+import { Dot, HeartIcon, MessageSquare, ShieldAlert, } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -28,7 +24,7 @@ export default function SinglePostPage() {
     const postFetchHandler = async () => {
       await sleep(400);
       setPost(undefined);
-      const response = await safeFetch(`http://localhost:3000/api/posts/${id}`);
+      const response = await safeFetch(`http://localhost:5000/api/posts/${id}`);
 
       if (response instanceof DetailedApiError) {
         setApiError(response);
