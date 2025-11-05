@@ -16,7 +16,7 @@ export class Post {
         public readonly message: string,
         public readonly username: string,
         public readonly date: Date,
-        public readonly potentialMisinformation?: boolean,
+        public readonly misinfo_state?: boolean,
     ) { }
 }
 
