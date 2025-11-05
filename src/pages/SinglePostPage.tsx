@@ -5,7 +5,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import VerticalSeparator from "@/components/ui/verticalseparator";
 import { DetailedApiError, safeFetch } from "@/services/api-utils";
 import { Post, singlePostApiResponseSchema } from "@/services/posts-service";
-import { Dot, HeartIcon, MessageSquare, ShieldAlert, } from "lucide-react";
+import { Dot, HeartIcon, MessageSquare, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -17,14 +17,16 @@ export default function SinglePostPage() {
   const { id } = useParams() ?? "";
   const [post, setPost] = useState<Post | undefined>(undefined);
   const [apiError, setApiError] = useState<DetailedApiError | undefined>(
-    undefined,
+    undefined
   );
 
   useEffect(() => {
     const postFetchHandler = async () => {
       await sleep(400);
       setPost(undefined);
-      const response = await safeFetch(`http://localhost:5000/api/posts/${id}`);
+      const response = await safeFetch(
+        `${import.meta.env.BASE_API_BASE}/api/posts/${id}`
+      );
 
       if (response instanceof DetailedApiError) {
         setApiError(response);
@@ -32,14 +34,15 @@ export default function SinglePostPage() {
       }
 
       const responseJson = await response.json();
-      const parsedResponse =
-        await singlePostApiResponseSchema.safeParseAsync(responseJson);
+      const parsedResponse = await singlePostApiResponseSchema.safeParseAsync(
+        responseJson
+      );
 
       if (parsedResponse.error) {
         setApiError(
           new DetailedApiError(
-            "This post was found, but could not be processed",
-          ),
+            "This post was found, but could not be processed"
+          )
         );
         return;
       } else {
@@ -49,7 +52,7 @@ export default function SinglePostPage() {
           p.message,
           p.username,
           new Date(p.date),
-          Boolean(p.misinfo_state),
+          Boolean(p.misinfo_state)
         );
         setApiError(undefined);
         setPost(newPost);
@@ -89,7 +92,9 @@ export function PostMisinfoWarningExpanded() {
       <AlertTitle>This post could contain misinformation</AlertTitle>
       <AlertDescription>
         <ul className="list-inside list-disc text-sm">
-          <li>This post contains similar patterns found in other misleading posts</li>
+          <li>
+            This post contains similar patterns found in other misleading posts
+          </li>
           <li>Our algorithm might be wrong</li>
           <li>Please fact-check any information</li>
         </ul>
