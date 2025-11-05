@@ -49,7 +49,7 @@ export default function SinglePostPage() {
           p.message,
           p.username,
           new Date(p.date),
-          p.potentialMisinformation,
+          p.misinfo_state,
         );
         setApiError(undefined);
         setPost(newPost);
@@ -75,7 +75,7 @@ export default function SinglePostPage() {
         style={{ maxWidth: "512px" }}
       >
         <h2 className="text-xl">{header}</h2>
-        {post?.potentialMisinformation && <PostMisinfoWarningExpanded />}
+        {post?.misinfo_state && <PostMisinfoWarningExpanded />}
         {content}
       </section>
     </>

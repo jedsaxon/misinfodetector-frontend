@@ -25,7 +25,7 @@ const postSchema = z.object({
     message: z.string(),
     username: z.string(),
     date: z.string(),
-    potentialMisinformation: z.boolean(),
+    misinfo_state: z.number(),
 });
 
 export const postApiResponseSchema = z.object({
@@ -70,7 +70,7 @@ export async function uploadPost(
             parsedResponse.data.post.message,
             parsedResponse.data.post.username,
             new Date(parsedResponse.data.post.date),
-            parsedResponse.data.post.potentialMisinformation,
+            Boolean(parsedResponse.data.post.misinfo_state),
         );
     }
 }
@@ -104,7 +104,7 @@ export async function fetchPosts(
                     p.message,
                     p.username,
                     new Date(p.date),
-                    p.potentialMisinformation,
+                    Boolean(p.misinfo_state),
                 ),
         );
         return new PostResponse(posts, parsedResponse.data.pages);

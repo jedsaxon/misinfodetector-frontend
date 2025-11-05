@@ -36,7 +36,7 @@ export default function PostRecord({
             Details
           </Button>
         </ButtonGroup>
-        {post.potentialMisinformation && (
+        {post.misinfo_state && (
           <Button
             variant="link"
             className="text-red-500 underline"
