@@ -49,7 +49,7 @@ export default function SinglePostPage() {
           p.message,
           p.username,
           new Date(p.date),
-          p.misinfo_state,
+          Boolean(p.misinfo_state),
         );
         setApiError(undefined);
         setPost(newPost);
