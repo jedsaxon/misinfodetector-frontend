@@ -1,4 +1,4 @@
-import z from "zod/v4";
+import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -54,7 +54,7 @@ export default function NewPostForm({
   });
 
   return (
-    <Card style={{ width: "512px" }}>
+    <Card className="w-full max-w-full">
       <CardHeader>
         <CardTitle>New Post Submission</CardTitle>
         <CardDescription>

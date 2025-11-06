@@ -1,19 +1,34 @@
 import type { Post } from "@/services/posts-service";
 import PostRecord from "./post-record";
-import { useState, type ReactNode } from "react";
-import MisinformationDialogue from "./misinfo-dialogue";
+import { useState } from "react";
 import EmptyPostList from "./empty-post-list";
+import { MisinformationPanel } from "./misinformation-panel";
 
 export default function PostList({
   posts,
   researchBtnClick,
-  detailsBtnClick,
+  detailsClick,
+  onMisinfoClick,
+  onPanelClose,
+  activePostId,
 }: {
   posts: Post[];
   researchBtnClick: () => void;
-  detailsBtnClick: (post: Post) => void;
+  detailsClick: (p: Post) => void;
+  onMisinfoClick?: (post: Post, element: HTMLElement | null) => void;
+  onPanelClose?: () => void;
+  activePostId?: string | null;
 }) {
-  const [misinfoModalOpen, setMisinfoModalOpen] = useState<boolean>(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const handleMisinfoClick = (post: Post, element: HTMLElement | null) => {
+    setSelectedPost(post);
+    setIsPanelOpen(true);
+    onMisinfoClick?.(post, element);
+  };
+
+  const isPanelActive = activePostId !== null && activePostId !== undefined;
 
   const components =
     posts.length > 0 ? (
@@ -21,8 +36,10 @@ export default function PostList({
         <PostRecord
           post={p}
           key={p.id}
-          misinfoClick={() => setMisinfoModalOpen(true)}
-          detailsClick={detailsBtnClick}
+          misinfoClick={handleMisinfoClick}
+          detailsClick={detailsClick}
+          isPanelActive={activePostId === p.id}
+          isDimmed={isPanelActive && activePostId !== p.id}
         />
       ))
     ) : (
@@ -32,10 +49,14 @@ export default function PostList({
   return (
     <>
       {components}
-      <MisinformationDialogue
-        isOpen={misinfoModalOpen}
-        setOpen={setMisinfoModalOpen}
-        researchBtnClick={researchBtnClick}
+      <MisinformationPanel
+        isOpen={isPanelOpen}
+        onClose={() => {
+          setIsPanelOpen(false);
+          setSelectedPost(null);
+          onPanelClose?.();
+        }}
+        post={selectedPost}
       />
     </>
   );
