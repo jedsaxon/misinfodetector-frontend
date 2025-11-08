@@ -19,7 +19,6 @@ export default function PostsPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get("pageNumber") || "1");
-  const [activePostId, setActivePostId] = useState<string | null>(null);
   const [isFormExpanded, setIsFormExpanded] = useState(false);
 
   const { posts: postResponse, apiError } = useFetchPosts(currentPage);
@@ -32,14 +31,6 @@ export default function PostsPage() {
 
   const postClicked = (post: Post) => {
     navigate(`/posts/${post.id}`);
-  };
-
-  const handleMisinfoClick = (post: Post) => {
-    setActivePostId(post.id);
-  };
-
-  const handlePanelClose = () => {
-    setActivePostId(null);
   };
 
   const handleFormSubmit = async (data: z.infer<typeof pageFormSchema>) => {
@@ -78,9 +69,6 @@ export default function PostsPage() {
       posts={postResponse.posts}
       researchBtnClick={() => navigate("/research")}
       detailsClick={postClicked}
-      onMisinfoClick={handleMisinfoClick}
-      onPanelClose={handlePanelClose}
-      activePostId={activePostId}
     />
   ) : (
     <PostSkeleton count={10} />
@@ -99,7 +87,6 @@ export default function PostsPage() {
           <div className="flex flex-col mb-5 max-w-[900px] w-full px-2 sm:px-0">
             {apiError && <ApiErrorAlert error={apiError} />}
 
-            {/* New Post Form */}
             <div className="mb-4">
               {isFormExpanded ? (
                 <NewPostForm

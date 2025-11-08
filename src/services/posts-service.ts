@@ -31,28 +31,43 @@ export class Post {
   public readonly username: string;
   public readonly date: Date;
   public readonly potentialMisinformation: boolean;
+  public readonly misinfoState: number | null;
+  public readonly confidence: number | null;
 
   public constructor(
     id: string,
     message: string,
     username: string,
     date: Date,
-    potentialMisinformation: boolean = false
+    potentialMisinformation: boolean = false,
+    misinfoState: number | null = null,
+    confidence: number | null = null
   ) {
     this.id = id;
     this.message = message;
     this.username = username;
     this.date = date;
     this.potentialMisinformation = potentialMisinformation;
+    this.misinfoState = misinfoState;
+    this.confidence = confidence;
   }
 }
+
+const misinfoReportSchema = z
+  .object({
+    state: z.number(),
+    confidence: z.number(),
+    submitted_date: z.string(),
+  })
+  .nullable()
+  .optional();
 
 const postSchema = z.object({
   id: z.string(),
   message: z.string(),
   username: z.string(),
   date: z.string(),
-  misinfo_state: z.number().optional(),
+  misinfo_report: misinfoReportSchema,
 });
 
 export const postApiResponseSchema = z.object({
@@ -96,12 +111,19 @@ export async function uploadPost(
       "There was an issue with the response payload, after recieving confirmation that it uploaded."
     );
   } else {
+    const misinfoReport = parsedResponse.data.post.misinfo_report;
+    const state = misinfoReport?.state ?? null;
+    const confidence = misinfoReport?.confidence ?? null;
+    const isMisinformation = state !== null && state === 0;
+
     return new Post(
       parsedResponse.data.post.id,
       parsedResponse.data.post.message,
       parsedResponse.data.post.username,
       new Date(parsedResponse.data.post.date),
-      (parsedResponse.data.post.misinfo_state ?? 0) === 1
+      isMisinformation,
+      state,
+      confidence
     );
   }
 }
@@ -130,16 +152,22 @@ export async function fetchPosts(
       `Data was malformed - cannot display posts: ${parsedResponse.error.message}`
     );
   } else {
-    const posts = parsedResponse.data.posts.map(
-      (p) =>
-        new Post(
-          p.id,
-          p.message,
-          p.username,
-          new Date(p.date),
-          (p.misinfo_state ?? 0) === 1
-        )
-    );
+    const posts = parsedResponse.data.posts.map((p) => {
+      const misinfoReport = p.misinfo_report;
+      const state = misinfoReport?.state ?? null;
+      const confidence = misinfoReport?.confidence ?? null;
+      const isMisinformation = state !== null && state === 0;
+
+      return new Post(
+        p.id,
+        p.message,
+        p.username,
+        new Date(p.date),
+        isMisinformation,
+        state,
+        confidence
+      );
+    });
     return new PostResponse(posts, parsedResponse.data.pages);
   }
 }
@@ -167,12 +195,19 @@ export async function fetchSinglePost(
     );
   } else {
     const p = parsedResponse.data.post;
+    const misinfoReport = p.misinfo_report;
+    const state = misinfoReport?.state ?? null;
+    const confidence = misinfoReport?.confidence ?? null;
+    const isMisinformation = state !== null && state === 0;
+
     return new Post(
       p.id,
       p.message,
       p.username,
       new Date(p.date),
-      (p.misinfo_state ?? 0) === 1
+      isMisinformation,
+      state,
+      confidence
     );
   }
 }
@@ -185,8 +220,18 @@ export function randomPost() {
     days: 30,
     refDate: new Date(new Date().toUTCString()),
   });
-  const misinformation = faker.number.int({ min: 0, max: 1 }) === 1;
-  return new Post(id, message, username, date, misinformation);
+  const state = faker.number.int({ min: 0, max: 1 });
+  const confidence = faker.number.float({ min: 0, max: 1, fractionDigits: 2 });
+  const misinformation = state === 0;
+  return new Post(
+    id,
+    message,
+    username,
+    date,
+    misinformation,
+    state,
+    confidence
+  );
 }
 
 export function randomPosts(count: number) {

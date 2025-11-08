@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DetailedApiError } from "@/services/api-utils";
-import { fetchPosts, fetchSinglePost, uploadPost, PostResponse, Post } from "@/services/posts-service";
+import {
+  fetchPosts,
+  fetchSinglePost,
+  uploadPost,
+  PostResponse,
+  Post,
+} from "@/services/posts-service";
 
 export function usePosts(pageNumber: number, resultAmount: number = 10) {
   return useQuery<PostResponse, DetailedApiError>({
@@ -35,7 +41,11 @@ export function usePost(id: string | undefined) {
 export function useUploadPost() {
   const queryClient = useQueryClient();
 
-  return useMutation<Post, DetailedApiError, { message: string; username: string }>({
+  return useMutation<
+    Post,
+    DetailedApiError,
+    { message: string; username: string }
+  >({
     mutationFn: async ({ message, username }) => {
       const result = await uploadPost(message, username);
       if (result instanceof DetailedApiError) {
@@ -52,10 +62,10 @@ export function useUploadPost() {
 
 // Legacy hook for backward compatibility - wraps usePosts
 export function useFetchPosts(pageNumber: number) {
-  const { data: posts, error: apiError, isLoading } = usePosts(pageNumber, 10);
-  
-  return { 
-    posts: isLoading ? undefined : posts, 
-    apiError: apiError instanceof DetailedApiError ? apiError : undefined 
+  const { data: posts, error: apiError, isLoading } = usePosts(pageNumber, 50);
+
+  return {
+    posts: isLoading ? undefined : posts,
+    apiError: apiError instanceof DetailedApiError ? apiError : undefined,
   };
 }
