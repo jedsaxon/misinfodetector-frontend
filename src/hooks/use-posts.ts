@@ -18,6 +18,8 @@ export function usePosts(pageNumber: number, resultAmount: number = 10) {
       }
       return result;
     },
+    staleTime: 0,
+    refetchOnMount: true,
   });
 }
 
@@ -54,7 +56,8 @@ export function useUploadPost() {
       return result;
     },
     onSuccess: () => {
-      // Invalidate posts queries to refetch after upload
+      // Invalidate all posts queries to trigger automatic refetch
+      // Since queries have staleTime: 0, they will immediately refetch
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
