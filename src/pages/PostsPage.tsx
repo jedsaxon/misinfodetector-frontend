@@ -9,7 +9,7 @@ import PostSkeleton from "@/components/ui/post-skeleton";
 import ApiErrorAlert from "@/components/ui/api-error-alert";
 import PostPager from "@/components/ui/post-pager";
 import type { Post } from "@/services/posts-service";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod/v4";
 import type { pageFormSchema } from "@/components/ui/new-post-form";
 import NewPostForm from "@/components/ui/new-post-form";
@@ -20,9 +20,23 @@ export default function PostsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get("pageNumber") || "1");
   const [isFormExpanded, setIsFormExpanded] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
 
   const { posts: postResponse, apiError } = useFetchPosts(currentPage);
   const uploadPostMutation = useUploadPost();
+
+  // loading delay, dev only
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      setShowLoading(true);
+      const timer = setTimeout(() => {
+        setShowLoading(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowLoading(false);
+    }
+  }, [currentPage]);
 
   const handlePageChange = (newPage: number) => {
     window.scrollTo({ top: 0, left: 0 });
@@ -64,15 +78,16 @@ export default function PostsPage() {
       />
     ) : undefined;
 
-  const postContent = postResponse ? (
-    <PostList
-      posts={postResponse.posts}
-      researchBtnClick={() => navigate("/research")}
-      detailsClick={postClicked}
-    />
-  ) : (
-    <PostSkeleton count={10} />
-  );
+  const postContent =
+    postResponse && !showLoading ? (
+      <PostList
+        posts={postResponse.posts}
+        researchBtnClick={() => navigate("/research")}
+        detailsClick={postClicked}
+      />
+    ) : (
+      <PostSkeleton count={10} />
+    );
 
   return (
     <>
