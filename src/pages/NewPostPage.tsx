@@ -2,32 +2,29 @@ import Header from "@/components/ui/header";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import VerticalSeparator from "@/components/ui/verticalseparator";
 import { Send } from "lucide-react";
-import z from "zod/v4";
+import { z } from "zod/v4";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { DetailedApiError } from "@/services/api-utils";
-import { uploadPost } from "@/services/posts-service";
+import { useUploadPost } from "@/hooks/use-posts";
 import type { pageFormSchema } from "@/components/ui/new-post-form";
 import NewPostForm from "@/components/ui/new-post-form";
 import { ApiErrorDialogue } from "@/components/ui/api-error-dialogue";
 
 export default function NewPostPage() {
   const navigate = useNavigate();
-  const [apiError, setApiError] = useState<DetailedApiError | undefined>(
-    undefined,
-  );
+  const uploadPostMutation = useUploadPost();
 
   const handleFormCancel = () => {
     navigate("/");
   };
 
   const handleFormSubmit = async (data: z.infer<typeof pageFormSchema>) => {
-    const response = await uploadPost(data.message, data.username);
-    if (response instanceof DetailedApiError) {
-      setApiError(response);
-    } else {
+    try {
+      await uploadPostMutation.mutateAsync({
+        message: data.message,
+        username: data.username,
+      });
       navigate("/");
-    }
+    } catch (error) {}
   };
 
   return (
@@ -44,14 +41,14 @@ export default function NewPostPage() {
         />
       </div>
       <ApiErrorDialogue
-        title={apiError?.title ?? ""}
-        message={apiError?.description ?? ""}
-        isOpen={apiError != undefined}
+        title={uploadPostMutation.error?.title ?? ""}
+        message={uploadPostMutation.error?.description ?? ""}
+        isOpen={uploadPostMutation.isError}
         setOpen={(o) => {
-          if (o == true) return; // this modal can only be opened with an error
-          setApiError(undefined);
+          if (o == true) return;
+          uploadPostMutation.reset();
         }}
-        closeBtnClick={() => setApiError(undefined)}
+        closeBtnClick={() => uploadPostMutation.reset()}
       />
     </>
   );

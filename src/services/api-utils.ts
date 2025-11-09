@@ -1,17 +1,23 @@
 import { z } from "zod/v4";
 
 export class DetailedApiError {
-  public constructor(
-    public readonly title: string,
-    public readonly description?: string,
-  ) {}
+  public readonly title: string;
+  public readonly description?: string;
+
+  public constructor(title: string, description?: string) {
+    this.title = title;
+    this.description = description;
+  }
 }
 
 export class ApiResponse<T> {
-  public constructor(
-    public readonly data: T,
-    public readonly message?: string,
-  ) {}
+  public readonly data: T;
+  public readonly message?: string;
+
+  public constructor(data: T, message?: string) {
+    this.data = data;
+    this.message = message;
+  }
 }
 
 const defaultApiErrorTitle = "Unable to fetch comments";
@@ -27,7 +33,7 @@ const detailedApiErrorSchema = z.object({
  */
 export async function safeFetch(
   endpoint: string,
-  options?: RequestInit,
+  options?: RequestInit
 ): Promise<Response | DetailedApiError> {
   let response: Response;
   try {
@@ -49,7 +55,7 @@ export function fetchErrorToDetailedError(e: unknown) {
 }
 
 export async function responseToError(
-  response: Response,
+  response: Response
 ): Promise<DetailedApiError> {
   let responseJson: unknown;
   try {
@@ -64,7 +70,7 @@ export async function responseToError(
   } else {
     return new DetailedApiError(
       errorParsed.data.title,
-      errorParsed.data.description,
+      errorParsed.data.description
     );
   }
 }
