@@ -26,17 +26,18 @@ export default function PostRecord({
     .toUpperCase()
     .slice(0, 2);
 
-  // Calculate accuracy from confidence to percentage
-  const accuracy =
+  // Calculate confidence percentage from confidence value
+  // Ensure always between 1% and 100% to handle edge cases
+  const confidence =
     post.confidence !== null
-      ? Math.round(post.confidence * 100)
+      ? Math.max(1, Math.min(100, Math.round(post.confidence * 100)))
       : post.potentialMisinformation
       ? 50
       : 100;
-  const accuracyColor =
-    accuracy >= 70
+  const confidenceColor =
+    confidence >= 70
       ? "text-green-500"
-      : accuracy >= 40
+      : confidence >= 40
       ? "text-yellow-500"
       : "text-red-500";
 
@@ -82,10 +83,10 @@ export default function PostRecord({
                   <span
                     className={cn(
                       "text-xs font-semibold px-2 py-0.5 rounded-md bg-white border-solid border-1",
-                      accuracyColor
+                      confidenceColor
                     )}
                   >
-                    {accuracy}% accuracy
+                    {confidence}% confidence
                   </span>
                 </div>
               )}

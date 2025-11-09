@@ -1,5 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { CircleAlert } from "lucide-react";
 
 export default function NotFound() {
@@ -10,7 +15,10 @@ export default function NotFound() {
           <CircleAlert />
         </EmptyMedia>
         <EmptyTitle>This page totally has data.</EmptyTitle>
-        <EmptyDescription>Our AI detected that the text "this page totally has data" is in fact misinformation.</EmptyDescription>
+        <EmptyDescription>
+          Our AI detected that the text "this page totally has data" is in fact
+          misinformation.
+        </EmptyDescription>
       </EmptyHeader>
     </Empty>
   );
