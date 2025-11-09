@@ -3,6 +3,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import VerticalSeparator from "@/components/ui/verticalseparator";
 import { BrainCircuit } from "lucide-react";
 import { MisinfoPieChart } from "@/components/ui/misinfo-pie-chart";
+import { TNSEScatterChart } from "@/components/ui/tnse-scatter-chart";
 
 export default function ResearchPage() {
   return (
@@ -14,8 +15,9 @@ export default function ResearchPage() {
       </Header>
       <div className="flex relative min-h-0">
         <div className="flex-1 flex justify-center">
-          <div className="flex flex-col mb-5 max-w-[900px] w-full px-2 sm:px-0">
+          <div className="flex flex-col mb-5 max-w-[900px] w-full px-2 sm:px-0 gap-5">
             <MisinfoPieChart />
+            <TNSEScatterChart />
           </div>
         </div>
       </div>

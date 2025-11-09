@@ -1,6 +1,6 @@
 import ReactECharts from "echarts-for-react";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -17,6 +17,7 @@ export function MisinfoPieChart() {
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [isFetchingAll, setIsFetchingAll] = useState(false);
   const [fetchProgress, setFetchProgress] = useState({ current: 0, total: 0 });
+  const chartRef = useRef<ReactECharts | null>(null);
 
   // First, fetch page 1 to get the total page count
   const {
@@ -136,6 +137,17 @@ export function MisinfoPieChart() {
           fontSize: isMobile ? 12 : 14,
         },
         itemGap: isMobile ? 20 : 10,
+      },
+      toolbox: {
+        show: !isMobile,
+        right: 10,
+        top: 10,
+        feature: {
+          saveAsImage: {},
+        },
+        iconStyle: {
+          borderColor: "#666",
+        },
       },
       series: [
         {
@@ -286,9 +298,13 @@ export function MisinfoPieChart() {
       </CardHeader>
       <CardContent className="px-2 sm:px-2">
         <ReactECharts
+          ref={(e) => {
+            chartRef.current = e;
+          }}
           option={option}
           style={{ height: isMobile ? "300px" : "400px", width: "100%" }}
           opts={{ renderer: "svg" }}
+          autoResize={false}
         />
       </CardContent>
     </Card>
