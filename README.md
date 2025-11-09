@@ -2,6 +2,27 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## Setup
+
+Ensure you have the following installed:
+- [Bun](https://bun.com/)
+- [Node](https://nodejs.org)
+
+1. Clone repo
+2. Cd into repo:
+```
+cd misinfodetector-frontend
+```
+3. Install dependencies
+```
+bun install
+```
+5. Run:
+```
+bun run dev
+```
+Follow terminal output to frontend (default: http://localhost:5173)
+
 ## Environment Variables
 
 Create a `.env` file in the root directory with:
