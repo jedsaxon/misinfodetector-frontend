@@ -13,7 +13,7 @@ export default function PostList({
 }) {
   const components =
     posts.length > 0 ? (
-      [...posts].reverse().map((p) => (
+      posts.map((p) => (
         <PostRecord
           post={p}
           key={p.id}
